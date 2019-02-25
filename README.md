@@ -7,7 +7,7 @@ project has the following goals:
 - Explore the potential for bounty-tagged development
 
 If you want a wallet with a graphical user interface, check out
-[Badger Wallet](http://badgerwallet.cash/). BCH functionality is
+[Badger Wallet](http://badger.bitcoin.com/). BCH functionality is
 implemented in both wallets with [BITBOX](https://developer.bitcoin.com/bitbox), and the command
 line interface for this project is built with [oclif](https://oclif.io).
 
