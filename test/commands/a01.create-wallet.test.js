@@ -1,3 +1,7 @@
+/*
+  Create wallet
+*/
+
 "use strict"
 
 //const { expect, test } = require("@oclif/test")
