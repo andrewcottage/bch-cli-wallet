@@ -24,7 +24,7 @@ $ npm install -g bch-cli-wallet
 $ bch-cli-wallet COMMAND
 running command...
 $ bch-cli-wallet (-v|--version|version)
-bch-cli-wallet/1.0.1 linux-x64 node-v10.15.1
+bch-cli-wallet/1.3.1 linux-x64 node-v10.15.1
 $ bch-cli-wallet --help [COMMAND]
 USAGE
   $ bch-cli-wallet COMMAND
@@ -56,7 +56,7 @@ OPTIONS
   -t, --testnet    Create a testnet wallet
 ```
 
-_See code: [src/commands/create-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/create-wallet.js)_
+_See code: [src/commands/create-wallet.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/create-wallet.js)_
 
 ## `bch-cli-wallet get-address`
 
@@ -70,7 +70,7 @@ OPTIONS
   -n, --name=name  Name of wallet
 ```
 
-_See code: [src/commands/get-address.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/get-address.js)_
+_See code: [src/commands/get-address.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/get-address.js)_
 
 ## `bch-cli-wallet hello`
 
@@ -88,7 +88,7 @@ DESCRIPTION
   Leaving it here for future reference in development.
 ```
 
-_See code: [src/commands/hello.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/hello.js)_
+_See code: [src/commands/hello.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/hello.js)_
 
 ## `bch-cli-wallet help [COMMAND]`
 
@@ -105,7 +105,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
 
 ## `bch-cli-wallet list-wallets`
 
@@ -116,7 +116,7 @@ USAGE
   $ bch-cli-wallet list-wallets
 ```
 
-_See code: [src/commands/list-wallets.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/list-wallets.js)_
+_See code: [src/commands/list-wallets.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/list-wallets.js)_
 
 ## `bch-cli-wallet remove-wallet`
 
@@ -130,7 +130,7 @@ OPTIONS
   -n, --name=name  Name of wallet
 ```
 
-_See code: [src/commands/remove-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/remove-wallet.js)_
+_See code: [src/commands/remove-wallet.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/remove-wallet.js)_
 
 ## `bch-cli-wallet send`
 
@@ -146,7 +146,7 @@ OPTIONS
   -n, --name=name          Name of wallet
 ```
 
-_See code: [src/commands/send.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send.js)_
+_See code: [src/commands/send.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/send.js)_
 
 ## `bch-cli-wallet send-all`
 
@@ -168,7 +168,7 @@ DESCRIPTION
   https://bit.ly/2TnhdVc
 ```
 
-_See code: [src/commands/send-all.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send-all.js)_
+_See code: [src/commands/send-all.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/send-all.js)_
 
 ## `bch-cli-wallet update-balances`
 
@@ -182,5 +182,5 @@ OPTIONS
   -n, --name=name  Name of wallet
 ```
 
-_See code: [src/commands/update-balances.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/update-balances.js)_
+_See code: [src/commands/update-balances.js](https://github.com/Bitcoin-com/bch-cli-wallet/blob/v1.3.1/src/commands/update-balances.js)_
 <!-- commandsstop -->

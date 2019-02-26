@@ -52,8 +52,8 @@ class SendAll extends Command {
 
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (walletInfo.network === "testnet")
-        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
+      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
