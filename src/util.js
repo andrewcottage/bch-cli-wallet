@@ -100,7 +100,7 @@ async function getUTXOs(walletInfo, BITBOX) {
 
     return retArray
   } catch (err) {
-    console.log(`Error in getUTXOs.`)
+    console.log(`Error in getUTXOs.`, err)
     throw err
   }
 }

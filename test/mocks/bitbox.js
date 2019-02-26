@@ -87,6 +87,7 @@ const addressDetails = [
   }
 ]
 
+/*
 const utxos = [
   [
     {
@@ -115,6 +116,31 @@ const utxos = [
     }
   ]
 ]
+*/
+
+const utxos = {
+  utxos: [
+    {
+      txid: "540894b009d0259c5de6142d6f5a421be9ec3b37f7ef07f07f84db8554587aeb",
+      vout: 0,
+      amount: 0.00001111,
+      satoshis: 1111,
+      height: 571488,
+      confirmations: 1
+    },
+    {
+      txid: "9ff10bd26d4749b8b247184ee1ca10713b9b180d4b829ebf5df9ef60cdfe1cca",
+      vout: 1,
+      amount: 0.00079504,
+      satoshis: 79504,
+      height: 571488,
+      confirmations: 1
+    }
+  ],
+  legacyAddress: "1PxJkXVkst3fJiee9mBQvuMPRvpUhySNKm",
+  cashAddress: "bitcoincash:qrausanyxjsddlhg8yuq78zysc440cvmsvapx9qarg",
+  scriptPubKey: "76a914fbc8766434a0d6fee839380f1c44862b57e19b8388ac"
+}
 
 class mockTransactionBuilder {
   constructor() {

@@ -95,29 +95,26 @@ describe("send", () => {
   })
 
   it("should select a single UTXO", async () => {
-    const bch = 0.025
+    const bch = 0.0001
     const utxos = bitboxMock.Address.utxo()
 
     const send = new Send()
-    const utxo = await send.selectUTXO(bch, utxos[0], BITBOX)
+    const utxo = await send.selectUTXO(bch, utxos.utxos, BITBOX)
     //console.log(`utxo: ${util.inspect(utxo)}`)
 
     assert.isObject(utxo, "Expect single utxo object")
     assert.hasAllKeys(utxo, [
       "txid",
       "vout",
-      "scriptPubKey",
       "amount",
       "satoshis",
       "height",
       "confirmations",
-      "legacyAddress",
-      "cashAddress",
       "hdIndex"
     ])
 
     // Since this test uses mocked data, the values are known ahead of time.
-    assert.equal(utxo.amount, 0.03)
+    assert.equal(utxo.amount, 0.00079504)
   })
 
   it("should send BCH on testnet", async () => {

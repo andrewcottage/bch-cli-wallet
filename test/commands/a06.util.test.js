@@ -51,13 +51,10 @@ describe("util", () => {
     assert.hasAllKeys(utxos[0], [
       "txid",
       "vout",
-      "scriptPubKey",
       "amount",
       "satoshis",
       "height",
       "confirmations",
-      "legacyAddress",
-      "cashAddress",
       "hdIndex"
     ])
   })

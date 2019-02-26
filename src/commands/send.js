@@ -198,6 +198,8 @@ class Send extends Command {
     const bchSatoshis = bch * 100000000
     const total = bchSatoshis + 250 // Add 250 satoshis to cover TX fee.
 
+    //console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+
     // Loop through all the UTXOs.
     for (var i = 0; i < utxos.length; i++) {
       const thisUTXO = utxos[i]
