@@ -58,7 +58,7 @@ class Send extends Command {
 
       // Get info on UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
-      //console.log(`utxos: ${util.inspect(utxos)}`)
+      //console.log(`send utxos: ${util.inspect(utxos)}`)
 
       // Select optimal UTXO
       const utxo = await this.selectUTXO(bch, utxos, BITBOX)
