@@ -80,12 +80,14 @@ async function getUTXOs(walletInfo, BITBOX) {
       const thisAddr = walletInfo.hasBalance[i].cashAddress
 
       // Get the UTXOs for that address.
-      const u = await BITBOX.Address.utxo([thisAddr])
-      //console.log(`u for ${thisAddr}: ${util.inspect(u[0])}`)
+      const u = await BITBOX.Address.utxo(thisAddr)
+      //console.log(`u for ${thisAddr}: ${util.inspect(u)}`)
+      const utxos = u.utxos
+      //console.log(`utxos for ${thisAddr}: ${util.inspect(utxos)}`)
 
       // Loop through each UXTO returned
-      for (var j = 0; j < u[0].length; j++) {
-        const thisUTXO = u[0][j]
+      for (var j = 0; j < utxos.length; j++) {
+        const thisUTXO = utxos[j]
         //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
 
         // Add the HD node index to the UTXO for use later.
@@ -98,7 +100,7 @@ async function getUTXOs(walletInfo, BITBOX) {
 
     return retArray
   } catch (err) {
-    console.log(`Error in getUTXOs.`)
+    console.log(`Error in getUTXOs.`, err)
     throw err
   }
 }
