@@ -4,8 +4,10 @@
 const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
 const ListWallets = require("../../src/commands/list-wallets")
+
 const { bitboxMock } = require("../mocks/bitbox")
 const BB = require("bitbox-sdk")
+const REST_URL = { restURL: "https://trest.bitcoin.com/v2/" }
 
 // Inspect utility used for debugging.
 const util = require("util")
@@ -19,23 +21,20 @@ util.inspect.defaultOptions = {
 if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("list-wallets", () => {
-  let BITBOX
+  //let listWallets
 
   beforeEach(() => {
+    //listWallets = new ListWallets()
     // By default, use the mocking library instead of live calls.
-    BITBOX = bitboxMock
+    //listWallets.BITBOX = bitboxMock
   })
 
   it("should correctly identify a mainnet wallet", async () => {
-    // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
-
     const filename = `${__dirname}/../../wallets/test123.json`
 
     // Create a mainnet wallet.
     const createWallet = new CreateWallet()
-    await createWallet.createWallet(filename, BITBOX, false)
+    await createWallet.createWallet(filename, false)
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()
@@ -50,15 +49,11 @@ describe("list-wallets", () => {
   })
 
   it("should correctly identify a testnet wallet", async () => {
-    // Use the real library if this is not a unit test
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-
     const filename = `${__dirname}/../../wallets/test123.json`
 
     // Create a testnet wallet
     const createWallet = new CreateWallet()
-    await createWallet.createWallet(filename, BITBOX, "testnet")
+    await createWallet.createWallet(filename, "testnet")
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()

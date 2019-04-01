@@ -8,7 +8,9 @@ const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
 const GetAddress = require("../../src/commands/get-address")
 const { bitboxMock } = require("../mocks/bitbox")
+
 const BB = require("bitbox-sdk")
+const REST_URL = { restURL: "https://trest.bitcoin.com/v2/" }
 
 // Inspect utility used for debugging.
 const util = require("util")
@@ -23,17 +25,20 @@ if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("get-address", () => {
   let BITBOX
-  const getAddress = new GetAddress()
+  let getAddress
 
   beforeEach(() => {
+    getAddress = new GetAddress()
+
     // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
+    getAddress.BITBOX = BITBOX
   })
 
   // getAddress can be called directly by other programs, so this is tested separately.
   it("getAddress should throw error if name is not supplied.", async () => {
     try {
-      await getAddress.getAddress(undefined, BITBOX)
+      await getAddress.getAddress(undefined)
     } catch (err) {
       assert.include(err.message, `Could not open`, "Expected error message.")
     }
@@ -54,7 +59,7 @@ describe("get-address", () => {
 
   it("should throw error if wallet file not found.", async () => {
     try {
-      await getAddress.getAddress(`doesnotexist`, BITBOX)
+      await getAddress.getAddress(`doesnotexist`)
     } catch (err) {
       assert.include(err.message, `Could not open`, "Expected error message.")
     }
@@ -62,8 +67,7 @@ describe("get-address", () => {
 
   it("increments the nextAddress property of the wallet.", async () => {
     // Use the real library if this is not a unit test
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+    if (process.env.TEST !== "unit") getAddress.BITBOX = new BB(REST_URL)
 
     const filename = `${__dirname}/../../wallets/test123.json`
 
@@ -71,7 +75,6 @@ describe("get-address", () => {
     const createWallet = new CreateWallet()
     const initialWalletInfo = await createWallet.createWallet(
       filename,
-      BITBOX,
       "testnet"
     )
     //console.log(`initialWalletInfo: ${util.inspect(initialWalletInfo)}`)
@@ -80,7 +83,7 @@ describe("get-address", () => {
     const firstAddressIndex = initialWalletInfo.nextAddress
 
     // Generate a new address
-    await getAddress.getAddress(filename, BITBOX)
+    await getAddress.getAddress(filename)
 
     // Delete the cached copy of the wallet. This allows testing of list-wallets.
     delete require.cache[require.resolve(`../../wallets/test123`)]
