@@ -9,7 +9,7 @@
 const assert = require("chai").assert
 const UpdateBalances = require("../../src/commands/update-balances")
 const { bitboxMock } = require("../mocks/bitbox")
-const BB = require("bitbox-sdk/lib/bitbox-sdk").default
+const BB = require("bitbox-sdk")
 const testwallet = require("../mocks/testwallet.json")
 
 // Inspect utility used for debugging.

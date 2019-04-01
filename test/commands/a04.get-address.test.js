@@ -8,7 +8,7 @@ const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
 const GetAddress = require("../../src/commands/get-address")
 const { bitboxMock } = require("../mocks/bitbox")
-const BB = require("bitbox-sdk/lib/bitbox-sdk").default
+const BB = require("bitbox-sdk")
 
 // Inspect utility used for debugging.
 const util = require("util")
