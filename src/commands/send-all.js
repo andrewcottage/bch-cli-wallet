@@ -21,7 +21,7 @@
 
 "use strict"
 
-const BB = require("bitbox-sdk/lib/bitbox-sdk").default
+const BB = require("bitbox-sdk")
 const appUtil = require("../util")
 //const GetAddress = require("./get-address")
 const UpdateBalances = require("./update-balances")

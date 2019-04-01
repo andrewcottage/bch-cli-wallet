@@ -1,6 +1,6 @@
 "use strict"
 
-const BB = require("bitbox-sdk/lib/bitbox-sdk").default
+const BB = require("bitbox-sdk")
 const appUtil = require("../util")
 
 const { Command, flags } = require("@oclif/command")
