@@ -41,7 +41,8 @@ makeNewWallet()
 
 
 <!-- toc -->
-* [Usage](#usage)
+* [NPM Usage](#npm-usage)
+* [Command Line Usage](#command-line-usage)
 * [Commands](#commands)
 <!-- tocstop -->
 # Command Line Usage
