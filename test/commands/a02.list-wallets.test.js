@@ -35,7 +35,7 @@ describe("list-wallets", () => {
 
     // Create a mainnet wallet.
     const createWallet = new CreateWallet()
-    await createWallet.createWallet(filename, BITBOX, false)
+    await createWallet.createWallet(filename, false)
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()

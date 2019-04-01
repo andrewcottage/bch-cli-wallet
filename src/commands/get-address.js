@@ -1,14 +1,21 @@
 /*
-  oclif command to get a new recieve address.
+  Generates a new HD address for recieving BCH.
+
+  -The next available address is tracked by the 'nextAddress' property in the
+  wallet .json file.
 */
 
 "use strict"
 
-const BB = require("bitbox-sdk")
 const appUtil = require("../util")
 const qrcode = require("qrcode-terminal")
 
+const BB = require("bitbox-sdk")
+const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+
 const { Command, flags } = require("@oclif/command")
+
+//let _this
 
 class GetAddress extends Command {
   async run() {
@@ -20,13 +27,13 @@ class GetAddress extends Command {
 
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (flags.testnet)
-        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
-      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+        this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
+      else this.BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
 
       // Generate an absolute filename from the name.
       const filename = `${__dirname}/../../wallets/${flags.name}.json`
 
-      const newAddress = await this.getAddress(filename, BITBOX)
+      const newAddress = await this.getAddress(filename)
 
       // Display the address as a QR code.
       qrcode.generate(newAddress, { small: true })
@@ -40,24 +47,24 @@ class GetAddress extends Command {
     }
   }
 
-  async getAddress(filename, BITBOX) {
+  async getAddress(filename) {
     //const filename = `${__dirname}/../../wallets/${name}.json`
     const walletInfo = appUtil.openWallet(filename)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     // root seed buffer
-    const rootSeed = BITBOX.Mnemonic.toSeed(walletInfo.mnemonic)
+    const rootSeed = this.BITBOX.Mnemonic.toSeed(walletInfo.mnemonic)
 
     // master HDNode
     if (walletInfo.network === "testnet")
-      var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
-    else var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
+      var masterHDNode = this.BITBOX.HDNode.fromSeed(rootSeed, "testnet")
+    else var masterHDNode = this.BITBOX.HDNode.fromSeed(rootSeed)
 
     // HDNode of BIP44 account
-    const account = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+    const account = this.BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
 
     // derive an external change address HDNode
-    const change = BITBOX.HDNode.derivePath(
+    const change = this.BITBOX.HDNode.derivePath(
       account,
       `0/${walletInfo.nextAddress}`
     )
@@ -78,7 +85,7 @@ class GetAddress extends Command {
     await appUtil.saveWallet(filename, walletInfo)
 
     // get the cash address
-    const newAddress = BITBOX.HDNode.toCashAddress(change)
+    const newAddress = this.BITBOX.HDNode.toCashAddress(change)
     //const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
     return newAddress

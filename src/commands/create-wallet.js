@@ -1,11 +1,22 @@
 "use strict"
 
-const BB = require("bitbox-sdk")
 const appUtil = require("../util")
+
+const BB = require("bitbox-sdk")
+const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
 
 const { Command, flags } = require("@oclif/command")
 
+//let _this
+
 class CreateWallet extends Command {
+  constructor(argv, config) {
+    super(argv, config)
+    //_this = this
+
+    this.BITBOX = BITBOX
+  }
+
   async run() {
     try {
       const { flags } = this.parse(CreateWallet)
@@ -15,19 +26,18 @@ class CreateWallet extends Command {
 
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (flags.testnet)
-        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
-      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+        this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
 
       const filename = `${__dirname}/../../wallets/${flags.name}.json`
 
-      this.createWallet(filename, BITBOX, flags.testnet)
+      this.createWallet(filename, flags.testnet)
     } catch (err) {
       console.log(`Error: `, err)
     }
   }
 
   // testnet is a boolean.
-  async createWallet(filename, BITBOX, testnet) {
+  async createWallet(filename, testnet) {
     try {
       if (!filename || filename === "") throw new Error(`filename required.`)
 
@@ -36,29 +46,32 @@ class CreateWallet extends Command {
       if (testnet) walletData.network = "testnet"
       else walletData.network = "mainnet"
 
-      // create 256 bit BIP39 mnemonic
-      const mnemonic = BITBOX.Mnemonic.generate(
+      // create 128 bit (12 word) BIP39 mnemonic
+      const mnemonic = this.BITBOX.Mnemonic.generate(
         128,
-        BITBOX.Mnemonic.wordLists().english
+        this.BITBOX.Mnemonic.wordLists().english
       )
       walletData.mnemonic = mnemonic
 
       // root seed buffer
-      const rootSeed = BITBOX.Mnemonic.toSeed(mnemonic)
+      const rootSeed = this.BITBOX.Mnemonic.toSeed(mnemonic)
 
       // master HDNode
       if (testnet)
-        var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
-      else var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
+        var masterHDNode = this.BITBOX.HDNode.fromSeed(rootSeed, "testnet")
+      else var masterHDNode = this.BITBOX.HDNode.fromSeed(rootSeed)
 
       // HDNode of BIP44 account
-      const account = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+      const account = this.BITBOX.HDNode.derivePath(
+        masterHDNode,
+        "m/44'/145'/0'"
+      )
 
       // derive the first external change address HDNode which is going to spend utxo
-      const change = BITBOX.HDNode.derivePath(account, "0/0")
+      const change = this.BITBOX.HDNode.derivePath(account, "0/0")
 
       // get the cash address
-      walletData.rootAddress = BITBOX.HDNode.toCashAddress(change)
+      walletData.rootAddress = this.BITBOX.HDNode.toCashAddress(change)
 
       // Initialize other data.
       walletData.balance = 0

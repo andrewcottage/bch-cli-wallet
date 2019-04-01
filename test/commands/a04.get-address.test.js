@@ -8,7 +8,7 @@ const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
 const GetAddress = require("../../src/commands/get-address")
 const { bitboxMock } = require("../mocks/bitbox")
-const BB = require("bitbox-sdk")
+//const BB = require("bitbox-sdk")
 
 // Inspect utility used for debugging.
 const util = require("util")
@@ -28,12 +28,13 @@ describe("get-address", () => {
   beforeEach(() => {
     // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
+    getAddress.BITBOX = BITBOX
   })
 
   // getAddress can be called directly by other programs, so this is tested separately.
   it("getAddress should throw error if name is not supplied.", async () => {
     try {
-      await getAddress.getAddress(undefined, BITBOX)
+      await getAddress.getAddress(undefined)
     } catch (err) {
       assert.include(err.message, `Could not open`, "Expected error message.")
     }
@@ -54,7 +55,7 @@ describe("get-address", () => {
 
   it("should throw error if wallet file not found.", async () => {
     try {
-      await getAddress.getAddress(`doesnotexist`, BITBOX)
+      await getAddress.getAddress(`doesnotexist`)
     } catch (err) {
       assert.include(err.message, `Could not open`, "Expected error message.")
     }
@@ -71,7 +72,6 @@ describe("get-address", () => {
     const createWallet = new CreateWallet()
     const initialWalletInfo = await createWallet.createWallet(
       filename,
-      BITBOX,
       "testnet"
     )
     //console.log(`initialWalletInfo: ${util.inspect(initialWalletInfo)}`)

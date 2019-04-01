@@ -8,7 +8,9 @@
 const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
 const { bitboxMock } = require("../mocks/bitbox")
+
 const BB = require("bitbox-sdk")
+const REST_URL = { restURL: "https://trest.bitcoin.com/v2/" }
 
 // Inspect utility used for debugging.
 const util = require("util")
@@ -22,17 +24,18 @@ util.inspect.defaultOptions = {
 if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("create-wallet", () => {
-  let BITBOX
+  let createWallet
 
   beforeEach(() => {
+    createWallet = new CreateWallet()
+
     // By default, use the mocking library instead of live calls.
-    BITBOX = bitboxMock
+    createWallet.BITBOX = bitboxMock
   })
 
   it("should exit with error status if called without a filename.", async () => {
     try {
-      const createWallet = new CreateWallet()
-      await createWallet.createWallet(undefined, BITBOX, undefined)
+      await createWallet.createWallet(undefined, undefined)
     } catch (err) {
       //console.error(`Error expected: ${util.inspect(err)}`)
 
@@ -46,17 +49,11 @@ describe("create-wallet", () => {
 
   it("should create a mainnet wallet file with the given name", async () => {
     // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+    if (process.env.TEST !== "unit") createWallet.BITBOX = new BB(REST_URL)
 
     const filename = `${__dirname}/../../wallets/test123.json`
 
-    const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet(
-      filename,
-      BITBOX,
-      undefined
-    )
+    const walletData = await createWallet.createWallet(filename, undefined)
 
     assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
     assert.hasAllKeys(walletData, [
@@ -79,13 +76,11 @@ describe("create-wallet", () => {
 
   it("should create a mainnet wallet file when testnet is false", async () => {
     // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+    if (process.env.TEST !== "unit") createWallet.BITBOX = new BB(REST_URL)
 
     const filename = `${__dirname}/../../wallets/test123.json`
 
-    const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet(filename, BITBOX, false)
+    const walletData = await createWallet.createWallet(filename, false)
 
     assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
     assert.hasAllKeys(walletData, [
@@ -108,17 +103,11 @@ describe("create-wallet", () => {
 
   it("should create a testnet wallet file with the given name", async () => {
     // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+    if (process.env.TEST !== "unit") createWallet.BITBOX = new BB(REST_URL)
 
     const filename = `${__dirname}/../../wallets/test123.json`
 
-    const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet(
-      filename,
-      BITBOX,
-      "testnet"
-    )
+    const walletData = await createWallet.createWallet(filename, "testnet")
 
     assert.equal(walletData.network, "testnet", "Expecting testnet address")
     assert.hasAllKeys(walletData, [
