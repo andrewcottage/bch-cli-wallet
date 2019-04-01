@@ -18,6 +18,12 @@ const { Command, flags } = require("@oclif/command")
 //let _this
 
 class GetAddress extends Command {
+  constructor(argv, config) {
+    super(argv, config)
+
+    this.BITBOX = BITBOX
+  }
+
   async run() {
     try {
       const { flags } = this.parse(GetAddress)
@@ -28,7 +34,6 @@ class GetAddress extends Command {
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (flags.testnet)
         this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
-      else this.BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
 
       // Generate an absolute filename from the name.
       const filename = `${__dirname}/../../wallets/${flags.name}.json`
