@@ -9,8 +9,11 @@
 const assert = require("chai").assert
 const UpdateBalances = require("../../src/commands/update-balances")
 const { bitboxMock } = require("../mocks/bitbox")
-const BB = require("bitbox-sdk")
+
 const testwallet = require("../mocks/testwallet.json")
+
+const BB = require("bitbox-sdk")
+const REST_URL = { restURL: "https://trest.bitcoin.com/v2/" }
 
 // Inspect utility used for debugging.
 const util = require("util")
@@ -24,19 +27,21 @@ util.inspect.defaultOptions = {
 if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("update-balances", () => {
-  let BITBOX
   let mockedWallet
   const filename = `${__dirname}/../../wallets/test123.json`
+  let updateBalances
 
   beforeEach(() => {
+    updateBalances = new UpdateBalances()
+
     // By default, use the mocking library instead of live calls.
-    BITBOX = bitboxMock
+    updateBalances.BITBOX = bitboxMock
+
     mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
   })
 
   it("should throw error if name is not supplied.", async () => {
     try {
-      const updateBalances = new UpdateBalances()
       await updateBalances.validateFlags({})
     } catch (err) {
       assert.include(
@@ -48,21 +53,19 @@ describe("update-balances", () => {
   })
 
   it("should generate an address accurately.", async () => {
-    BITBOX = new BB({})
+    updateBalances.BITBOX = new BB(REST_URL)
 
-    const updateBalances = new UpdateBalances()
-    const addr = updateBalances.generateAddress(mockedWallet, 3, BITBOX)
+    const addr = updateBalances.generateAddress(mockedWallet, 3)
+    //console.log(`addr: ${util.inspect(addr)}`)
 
     assert.equal(addr, "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3")
   })
 
   it("should get balances for all addresses in wallet", async () => {
     // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+    if (process.env.TEST !== "unit") updateBalances.BITBOX = new BB(REST_URL)
 
-    const updateBalances = new UpdateBalances()
-    const balances = await updateBalances.getAddressData(mockedWallet, BITBOX)
+    const balances = await updateBalances.getAddressData(mockedWallet)
     //console.log(`balances: ${util.inspect(balances)}`)
 
     assert.isArray(balances, "Expect array of address balances")
@@ -73,7 +76,6 @@ describe("update-balances", () => {
     // Retrieve mocked data.
     const addressData = bitboxMock.Address.details()
 
-    const updateBalances = new UpdateBalances()
     const hasBalance = await updateBalances.generateHasBalance(addressData)
     //console.log(`hasBalance: ${util.inspect(hasBalance)}`)
 
@@ -91,7 +93,7 @@ describe("update-balances", () => {
   it("should aggregate balances", async () => {
     // Retrieve mocked data
     const addressData = bitboxMock.Address.details()
-    const updateBalances = new UpdateBalances()
+
     const hasBalance = await updateBalances.generateHasBalance(addressData)
 
     const balanceTotal = await updateBalances.sumConfirmedBalances(hasBalance)
@@ -102,14 +104,11 @@ describe("update-balances", () => {
 
   it("should update balances", async () => {
     // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+    if (process.env.TEST !== "unit") updateBalances.BITBOX = new BB(REST_URL)
 
-    const updateBalances = new UpdateBalances()
     const walletInfo = await updateBalances.updateBalances(
       filename,
-      mockedWallet,
-      BITBOX
+      mockedWallet
     )
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 

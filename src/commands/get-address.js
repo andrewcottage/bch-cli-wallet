@@ -3,6 +3,9 @@
 
   -The next available address is tracked by the 'nextAddress' property in the
   wallet .json file.
+
+  TODO:
+  -Add BIP44 support
 */
 
 "use strict"
