@@ -16,10 +16,17 @@ line interface for this project is built with [oclif](https://oclif.io).
 
 [![Build Status](https://travis-ci.org/christroutner/consolidating-coinjoin.svg?branch=master)](https://travis-ci.org/christroutner/consolidating-coinjoin)  [![Coverage Status](https://coveralls.io/repos/github/Bitcoin-com/bch-cli-wallet/badge.svg?branch=master)](https://coveralls.io/github/Bitcoin-com/bch-cli-wallet?branch=master) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
+<!-- toc -->
+* [NPM Usage](#npm-usage)
+* [Command Line Usage](#command-line-usage)
+* [Commands](#commands)
+<!-- tocstop -->
+
+
 # NPM Usage
 The [npm library](https://www.npmjs.com/package/bch-cli-wallet) can be included
 in your own app to instantly give it the ability to send and receive BCH transactions.
-Include it using the same standard format as all other npm libraries:
+Here is an example of how to include it in your own app:
 
 ```javascript
 // Instantiate the Create Wallet class from this library.
@@ -39,12 +46,6 @@ async function makeNewWallet() {
 makeNewWallet()
 ```
 
-
-<!-- toc -->
-* [NPM Usage](#npm-usage)
-* [Command Line Usage](#command-line-usage)
-* [Commands](#commands)
-<!-- tocstop -->
 # Command Line Usage
 <!-- usage -->
 ```sh-session
