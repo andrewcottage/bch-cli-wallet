@@ -18,7 +18,8 @@ combine UTXOs, and it will warn the user when it does so.
 The [Roadmap](https://github.com/Bitcoin-com/bch-cli-wallet/issues/4) for this
 project includes integration to privacy technology like
 [CashShuffle](https://cashshuffle.com/) and
-[Consolidating CoinJoin](https://gist.github.com/christroutner/8d54597da652fe2affa5a7230664bc45).
+[Consolidating CoinJoin](https://gist.github.com/christroutner/8d54597da652fe2affa5a7230664bc45), in
+order to combine UTXOs in a way that does not degrade the users privacy.
 
 Additional information on the design decisions and trade-offs will be documented
 here and in the header of each commands .js file.
