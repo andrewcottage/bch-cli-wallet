@@ -14,6 +14,9 @@ If you want a wallet with a graphical user interface, check out
 implemented in both wallets with [BITBOX](https://developer.bitcoin.com/bitbox), and the command
 line interface for this project is built with [oclif](https://oclif.io).
 
+Also, be sure to check out the design decisions and trade-offs that went into the
+creation of this project in the [docs directory](./docs)
+
 [![Build Status](https://travis-ci.org/christroutner/consolidating-coinjoin.svg?branch=master)](https://travis-ci.org/christroutner/consolidating-coinjoin)  [![Coverage Status](https://coveralls.io/repos/github/Bitcoin-com/bch-cli-wallet/badge.svg?branch=master)](https://coveralls.io/github/Bitcoin-com/bch-cli-wallet?branch=master) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 <!-- toc -->
