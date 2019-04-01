@@ -26,7 +26,8 @@ line interface for this project is built with [oclif](https://oclif.io).
 # NPM Usage
 The [npm library](https://www.npmjs.com/package/bch-cli-wallet) can be included
 in your own app to instantly give it the ability to send and receive BCH transactions.
-Here is an example of how to include it in your own app:
+Here is an example of how to include it in your own app. This example will generate
+a new HD wallet.
 
 ```javascript
 // Instantiate the Create Wallet class from this library.
