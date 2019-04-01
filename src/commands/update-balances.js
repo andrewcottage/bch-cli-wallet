@@ -113,8 +113,11 @@ class UpdateBalances extends Command {
     return balances
   }
 
-  // Generates an HD address for the given index and wallet info.
-  generateAddress(walletInfo, index) {
+  // Generates an array of HD addresses.
+  // Address are generated from index to limit.
+  // e.g. generateAddress(walletInfo, 20, 39)
+  // will generate a 20-element array of addresses from index 20 to 39
+  generateAddress(walletInfo, index, limit) {
     // root seed buffer
     const rootSeed = this.BITBOX.Mnemonic.toSeed(walletInfo.mnemonic)
 
@@ -126,6 +129,24 @@ class UpdateBalances extends Command {
     // HDNode of BIP44 account
     const account = this.BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
 
+    // Empty array for collecting generated addresses
+    const bulkAddresses = []
+
+    // Generate the addresses.
+    for (let i = index; i < index + limit; i++) {
+      // derive an external change address HDNode
+      const change = BITBOX.HDNode.derivePath(account, `0/${i}`)
+
+      // get the cash address
+      const newAddress = BITBOX.HDNode.toCashAddress(change)
+      //const legacy = BITBOX.HDNode.toLegacyAddress(change)
+
+      //push address into array
+      bulkAddresses.push(newAddress)
+    }
+
+    return bulkAddresses
+    /*
     // derive an external change address HDNode
     const change = this.BITBOX.HDNode.derivePath(account, `0/${index}`)
 
@@ -134,6 +155,7 @@ class UpdateBalances extends Command {
     //const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
     return newAddress
+    */
   }
 
   // Generates the data that will be stored in the hasBalance array of the
