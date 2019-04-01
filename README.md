@@ -1,8 +1,11 @@
 bch-cli-wallet
 ========
 
-This is a prototype Bitcoin Cash (BCH) wallet that runs on the command line. This
-project has the following goals:
+This is an npm library and Bitcoin Cash (BCH) wallet that runs on the command
+line. Add this library to your app to instantly give it the ability to transact
+on the BCH network!
+
+This project has the following goals:
 - Create a code base for a wallet that is easily forkable and extensible by JavaScript developers.
 - Explore the potential for bounty-tagged development
 
@@ -13,11 +16,35 @@ line interface for this project is built with [oclif](https://oclif.io).
 
 [![Build Status](https://travis-ci.org/christroutner/consolidating-coinjoin.svg?branch=master)](https://travis-ci.org/christroutner/consolidating-coinjoin)  [![Coverage Status](https://coveralls.io/repos/github/Bitcoin-com/bch-cli-wallet/badge.svg?branch=master)](https://coveralls.io/github/Bitcoin-com/bch-cli-wallet?branch=master) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
+# NPM Usage
+The [npm library](https://www.npmjs.com/package/bch-cli-wallet) can be included
+in your own app to instantly give it the ability to send and receive BCH transactions.
+Include it using the same standard format as all other npm libraries:
+
+```javascript
+// Instantiate the Create Wallet class from this library.
+const CreateWallet = require('bch-cli-wallet/src/commands/create-wallet')
+const createWallet = new CreateWallet()
+
+// Instantiate BITBOX SDK
+const BITBOXSDK = require('bitbox-sdk')
+const BITBOX = new BITBOXSDK()
+
+const walletFile = './wallet.json'
+
+// Generate a new wallet.
+async function makeNewWallet() {
+  const wallet = await createWallet.createWallet(walletFile, BITBOX)
+}
+makeNewWallet()
+```
+
+
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
-# Usage
+# Command Line Usage
 <!-- usage -->
 ```sh-session
 $ npm install -g bch-cli-wallet
