@@ -115,8 +115,8 @@ class UpdateBalances extends Command {
 
   // Generates an array of HD addresses.
   // Address are generated from index to limit.
-  // e.g. generateAddress(walletInfo, 20, 39)
-  // will generate a 20-element array of addresses from index 20 to 39
+  // e.g. generateAddress(walletInfo, 20, 10)
+  // will generate a 20-element array of addresses from index 20 to 29
   generateAddress(walletInfo, index, limit) {
     // root seed buffer
     const rootSeed = this.BITBOX.Mnemonic.toSeed(walletInfo.mnemonic)
