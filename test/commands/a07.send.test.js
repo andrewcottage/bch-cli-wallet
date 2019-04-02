@@ -109,8 +109,8 @@ describe("send", () => {
       "amount",
       "satoshis",
       "height",
-      "confirmations",
-      "hdIndex"
+      "confirmations"
+      //"hdIndex"
     ])
 
     // Since this test uses mocked data, the values are known ahead of time.

@@ -18,11 +18,59 @@ util.inspect.defaultOptions = {
   depth: 1
 }
 
+const BB = require("bitbox-sdk")
+const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+
+class AppUtils {
+  constructor() {
+    this.BITBOX = BITBOX
+  }
+
+  // Returns an array of UTXO objects. These objects contain the metadata needed
+  // to optimize the selection of a UTXO for spending.
+  async getUTXOs(walletInfo) {
+    try {
+      const retArray = []
+
+      // Loop through each address that has a balance.
+      for (var i = 0; i < walletInfo.hasBalance.length; i++) {
+        const thisAddr = walletInfo.hasBalance[i].cashAddress
+
+        // Get the UTXOs for that address.
+        const utxos = await this.BITBOX.Address.utxo(thisAddr)
+        //console.log(`u for ${thisAddr}: ${util.inspect(u)}`)
+        //const utxos = u.utxos
+        //console.log(`utxos for ${thisAddr}: ${util.inspect(utxos)}`)
+
+        // Return an empty array if there are no utxos associated with the address.
+        if (utxos.length === 0) return []
+
+        // Loop through each UXTO returned
+        for (var j = 0; j < utxos.length; j++) {
+          const thisUTXO = utxos[j]
+          //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
+
+          // Add the HD node index to the UTXO for use later.
+          thisUTXO.hdIndex = walletInfo.hasBalance[i].index
+
+          // Add the UTXO to the array if it has at least one confirmation.
+          if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
+        }
+      }
+
+      return retArray
+    } catch (err) {
+      console.log(`Error in getUTXOs.`, err)
+      throw err
+    }
+  }
+}
+
 module.exports = {
   saveWallet,
   openWallet,
   changeAddrFromMnemonic, // Used for signing transactions.
-  getUTXOs // Get all UTXOs associated with a wallet.
+  AppUtils
 }
 
 // Save a wallet to a file.
@@ -67,40 +115,4 @@ function changeAddrFromMnemonic(walletInfo, index, BITBOX) {
   const change = BITBOX.HDNode.derivePath(account, `0/${index}`)
 
   return change
-}
-
-// Returns an array of UTXO objects. These objects contain the metadata needed
-// to optimize the selection of a UTXO for spending.
-async function getUTXOs(walletInfo, BITBOX) {
-  try {
-    const retArray = []
-
-    // Loop through each address that has a balance.
-    for (var i = 0; i < walletInfo.hasBalance.length; i++) {
-      const thisAddr = walletInfo.hasBalance[i].cashAddress
-
-      // Get the UTXOs for that address.
-      const u = await BITBOX.Address.utxo(thisAddr)
-      //console.log(`u for ${thisAddr}: ${util.inspect(u)}`)
-      const utxos = u.utxos
-      //console.log(`utxos for ${thisAddr}: ${util.inspect(utxos)}`)
-
-      // Loop through each UXTO returned
-      for (var j = 0; j < utxos.length; j++) {
-        const thisUTXO = utxos[j]
-        //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
-
-        // Add the HD node index to the UTXO for use later.
-        thisUTXO.hdIndex = walletInfo.hasBalance[i].index
-
-        // Add the UTXO to the array if it has at least one confirmation.
-        if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
-      }
-    }
-
-    return retArray
-  } catch (err) {
-    console.log(`Error in getUTXOs.`, err)
-    throw err
-  }
 }
