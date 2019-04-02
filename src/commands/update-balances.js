@@ -153,20 +153,25 @@ class UpdateBalances extends Command {
   // Addresses start at the index and the number of address data retrieved is
   // set by the limit (up to 20). Data is returned as an array of objects.
   async getAddressData(walletInfo, index, limit) {
-    if (limit > 20) throw new Error(`limit must be 20 or less.`)
+    try {
+      if (limit > 20) throw new Error(`limit must be 20 or less.`)
 
-    console.log(
-      `Getting address data at index ${index} up to index ${index + limit}`
-    )
+      console.log(
+        `Getting address data at index ${index} up to index ${index + limit}`
+      )
 
-    // Get the list of addresses.
-    const addresses = this.generateAddress(walletInfo, index, limit)
-    //console.log(`addresses: ${util.inspect(addresses)}`)
+      // Get the list of addresses.
+      const addresses = this.generateAddress(walletInfo, index, limit)
+      //console.log(`addresses: ${util.inspect(addresses)}`)
 
-    // get BCH balance and details for each address.
-    const balances = await this.BITBOX.Address.details(addresses)
+      // get BCH balance and details for each address.
+      const balances = await this.BITBOX.Address.details(addresses)
 
-    return balances
+      return balances
+    } catch (err) {
+      console.log(`Error in update-balances.js/getAddressData()`)
+      throw err
+    }
   }
 
   // Generates an array of HD addresses.
@@ -191,11 +196,11 @@ class UpdateBalances extends Command {
     // Generate the addresses.
     for (let i = index; i < index + limit; i++) {
       // derive an external change address HDNode
-      const change = BITBOX.HDNode.derivePath(account, `0/${i}`)
+      const change = this.BITBOX.HDNode.derivePath(account, `0/${i}`)
 
       // get the cash address
-      const newAddress = BITBOX.HDNode.toCashAddress(change)
-      //const legacy = BITBOX.HDNode.toLegacyAddress(change)
+      const newAddress = this.BITBOX.HDNode.toCashAddress(change)
+      //const legacy = this.BITBOX.HDNode.toLegacyAddress(change)
 
       //push address into array
       bulkAddresses.push(newAddress)
