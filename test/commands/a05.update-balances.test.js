@@ -33,7 +33,7 @@ if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("#update-balances.js", () => {
   let mockedWallet
-  const filename = `${__dirname}/../../wallets/test123.json`
+  //const filename = `${__dirname}/../../wallets/test123.json`
   let updateBalances
   let sandbox
   let mockDataCopy

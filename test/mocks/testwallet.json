@@ -15,8 +15,8 @@
     },
     {
       "index": 3,
-      "balance": 0.06999752,
-      "balanceSat": 6999752,
+      "balance": 0,
+      "balanceSat": 0,
       "unconfirmedBalance": 0,
       "unconfirmedBalanceSat": 0,
       "cashAddress": "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"

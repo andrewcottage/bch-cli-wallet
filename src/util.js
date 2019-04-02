@@ -37,13 +37,10 @@ class AppUtils {
         const thisAddr = walletInfo.hasBalance[i].cashAddress
 
         // Get the UTXOs for that address.
-        const utxos = await this.BITBOX.Address.utxo(thisAddr)
-        //console.log(`u for ${thisAddr}: ${util.inspect(u)}`)
-        //const utxos = u.utxos
+        const u = await this.BITBOX.Address.utxo(thisAddr)
+        //console.log(`u for ${thisAddr}: ${JSON.stringify(u, null, 2)}`)
+        const utxos = u.utxos
         //console.log(`utxos for ${thisAddr}: ${util.inspect(utxos)}`)
-
-        // Return an empty array if there are no utxos associated with the address.
-        if (utxos.length === 0) return []
 
         // Loop through each UXTO returned
         for (var j = 0; j < utxos.length; j++) {
