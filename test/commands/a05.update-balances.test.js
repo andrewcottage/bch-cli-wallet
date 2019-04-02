@@ -36,6 +36,7 @@ describe("#update-balances.js", () => {
   const filename = `${__dirname}/../../wallets/test123.json`
   let updateBalances
   let sandbox
+  let mockDataCopy
 
   beforeEach(() => {
     updateBalances = new UpdateBalances()
@@ -44,6 +45,7 @@ describe("#update-balances.js", () => {
     updateBalances.BITBOX = bitboxMock
 
     mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
+    mockDataCopy = Object.assign({}, updateBalancesMocks)
 
     sandbox = sinon.createSandbox()
   })
@@ -105,6 +107,28 @@ describe("#update-balances.js", () => {
       //console.log(`result: ${util.inspect(result)}`)
 
       assert.isArray(result)
+    })
+  })
+
+  describe("#detectBalance", () => {
+    it("should return true when addresses have balance", () => {
+      const result = updateBalances.detectBalance(
+        updateBalancesMocks.mockAddressDetails
+      )
+      //console.log(`result: ${util.inspect(result)}`)
+
+      assert.equal(result, true, "Boolean true expected.")
+    })
+
+    it("should return false when addresses have no balance", () => {
+      // Manipulate test data before running the test.
+      mockDataCopy.mockAddressDetails[1].totalReceivedSat = 0
+
+      const result = updateBalances.detectBalance(
+        mockDataCopy.mockAddressDetails
+      )
+
+      assert.equal(result, false, "Boolean false expected.")
     })
   })
 
