@@ -62,7 +62,8 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --reporter=text mocha  --timeout 15000",
+    "test": "TEST=unit nyc --reporter=text mocha  --timeout 15000",
+    "test:integration": "TEST=integration nyc --reporter=text mocha  --timeout 15000",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "coverage:report": "nyc --reporter=html mocha",
     "version": "oclif-dev readme && git add README.md",

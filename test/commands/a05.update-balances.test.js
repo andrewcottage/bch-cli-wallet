@@ -92,9 +92,10 @@ describe("#update-balances.js", () => {
     })
 
     it("should return an array of address data", async () => {
+      updateBalances.BITBOX = new BB(REST_URL)
+
       // Use mocked data if this is a unit test.
       if (process.env.TEST === "unit") {
-        updateBalances.BITBOX = new BB(REST_URL)
         sandbox
           .stub(updateBalances.BITBOX.Address, "details")
           .resolves(updateBalancesMocks.mockAddressDetails)
