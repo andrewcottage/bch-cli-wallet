@@ -88,13 +88,26 @@ class UpdateBalances extends Command {
     return walletInfo
   }
 
-  // Retrieves data (objects) on all addresses in an HD wallet and returns an
-  // array of these objects.
-  async getAddressData(walletInfo) {
-    //const numberOfAddresses = walletInfo.nextAddress - 1
-    const numberOfAddresses = walletInfo.nextAddress
-    console.log(`Checking ${numberOfAddresses} addresses.`)
+  // Retrieves details data (objects) on addresses in an HD wallet from rest.bitcoin.com
+  // A max of 20 addresses can be retrieved at a time.
+  // Addresses start at the index and the number of address data retrieved is
+  // set by the limit (up to 20). Data is returned as an array of objects.
+  async getAddressData(walletInfo, index, limit) {
+    if (limit > 20) throw new Error(`limit must be 20 or less.`)
 
+    console.log(
+      `Getting address data at index ${index} up to index ${index + limit}`
+    )
+
+    // Get the list of addresses.
+    const addresses = this.generateAddress(walletInfo, index, limit)
+    //console.log(`addresses: ${util.inspect(addresses)}`)
+
+    // get BCH balance and details for each address.
+    const balances = await this.BITBOX.Address.details(addresses)
+
+    return balances
+    /*
     const balances = []
     for (var i = 0; i < numberOfAddresses; i++) {
       const thisAddress = this.generateAddress(walletInfo, i)
@@ -111,6 +124,7 @@ class UpdateBalances extends Command {
     }
 
     return balances
+*/
   }
 
   // Generates an array of HD addresses.

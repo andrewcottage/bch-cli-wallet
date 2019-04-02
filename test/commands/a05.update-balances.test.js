@@ -7,10 +7,15 @@
 "use strict"
 
 const assert = require("chai").assert
-const UpdateBalances = require("../../src/commands/update-balances")
-const { bitboxMock } = require("../mocks/bitbox")
+const sinon = require("sinon")
 
+// File to be tested.
+const UpdateBalances = require("../../src/commands/update-balances")
+
+// Mock data
 const testwallet = require("../mocks/testwallet.json")
+const { bitboxMock } = require("../mocks/bitbox")
+const updateBalancesMocks = require("../mocks/update-balances")
 
 const BB = require("bitbox-sdk")
 const REST_URL = { restURL: "https://trest.bitcoin.com/v2/" }
@@ -30,6 +35,7 @@ describe("#update-balances.js", () => {
   let mockedWallet
   const filename = `${__dirname}/../../wallets/test123.json`
   let updateBalances
+  let sandbox
 
   beforeEach(() => {
     updateBalances = new UpdateBalances()
@@ -38,6 +44,12 @@ describe("#update-balances.js", () => {
     updateBalances.BITBOX = bitboxMock
 
     mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
+
+    sandbox = sinon.createSandbox()
+  })
+
+  afterEach(() => {
+    sandbox.restore()
   })
 
   describe("#generateAddresses", () => {
@@ -64,6 +76,34 @@ describe("#update-balances.js", () => {
       assert.isArray(addr)
       assert.equal(addr.length, 20)
       assert.equal(addr[0], mockedWallet.rootAddress)
+    })
+  })
+
+  describe("#getAddressData", () => {
+    it("should throw error if limit is over 20", async () => {
+      try {
+        await updateBalances.getAddressData(mockedWallet, 0, 40)
+
+        assert.equal(true, false, "unexpected result!")
+      } catch (err) {
+        //console.log(`err: ${util.inspect(err)}`)
+        assert.include(err.message, "limit must be 20 or less")
+      }
+    })
+
+    it("should return an array of address data", async () => {
+      // Use mocked data if this is a unit test.
+      if (process.env.TEST === "unit") {
+        updateBalances.BITBOX = new BB(REST_URL)
+        sandbox
+          .stub(updateBalances.BITBOX.Address, "details")
+          .resolves(updateBalancesMocks.mockAddressDetails)
+      }
+
+      const result = await updateBalances.getAddressData(mockedWallet, 0, 2)
+      //console.log(`result: ${util.inspect(result)}`)
+
+      assert.isArray(result)
     })
   })
 
