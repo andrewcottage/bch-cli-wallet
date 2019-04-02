@@ -100,7 +100,7 @@ describe("#update-balances.js", () => {
       if (process.env.TEST === "unit") {
         sandbox
           .stub(updateBalances.BITBOX.Address, "details")
-          .resolves(updateBalancesMocks.mockAddressDetails)
+          .resolves(updateBalancesMocks.mockAddressDetails1)
       }
 
       const result = await updateBalances.getAddressData(mockedWallet, 0, 2)
@@ -113,7 +113,7 @@ describe("#update-balances.js", () => {
   describe("#detectBalance", () => {
     it("should return true when addresses have balance", () => {
       const result = updateBalances.detectBalance(
-        updateBalancesMocks.mockAddressDetails
+        updateBalancesMocks.mockAddressDetails1
       )
       //console.log(`result: ${util.inspect(result)}`)
 
@@ -121,14 +121,33 @@ describe("#update-balances.js", () => {
     })
 
     it("should return false when addresses have no balance", () => {
-      // Manipulate test data before running the test.
-      mockDataCopy.mockAddressDetails[1].totalReceivedSat = 0
-
       const result = updateBalances.detectBalance(
-        mockDataCopy.mockAddressDetails
+        mockDataCopy.mockAddressDetails2
       )
 
       assert.equal(result, false, "Boolean false expected.")
+    })
+  })
+
+  describe("#getAllAddressData", () => {
+    it("should get all address data", async () => {
+      // Use mocked data if this is a unit test.
+      if (process.env.TEST === "unit") {
+        sandbox
+          .stub(updateBalances, "getAddressData")
+          .onFirstCall()
+          .resolves(updateBalancesMocks.mockAddressDetails1)
+          .onSecondCall()
+          .resolves(updateBalancesMocks.mockAddressDetails1)
+          .onThirdCall()
+          .resolves(updateBalancesMocks.mockAddressDetails2)
+      }
+
+      const result = await updateBalances.getAllAddressData(mockedWallet)
+      //console.log(`result: ${util.inspect(result)}`)
+
+      assert.isArray(result)
+      assert.equal(result.length, 4)
     })
   })
 
