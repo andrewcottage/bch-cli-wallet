@@ -95,7 +95,7 @@ class UpdateBalances extends Command {
   async getAllAddressData(walletInfo) {
     try {
       let addressData = [] // Accumulates address data.
-      const currentIndex = 0 // tracks the current HD index.
+      let currentIndex = 0 // tracks the current HD index.
       let batchHasBalance = true // Flag to signal when last address found.
 
       while (batchHasBalance) {
@@ -106,6 +106,9 @@ class UpdateBalances extends Command {
           20
         )
         //console.log(`thisDataBatch: ${util.inspect(thisDataBatch)}`)
+
+        // Increment the index by 20 (addresses).
+        currentIndex += 20
 
         // Check if data has no balance. no balance == last address.
         batchHasBalance = this.detectBalance(thisDataBatch)
