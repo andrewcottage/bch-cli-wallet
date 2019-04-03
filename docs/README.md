@@ -11,7 +11,7 @@ For example, the [send command](../src/commands/send.js) will return this messag
 
 `Could not find a UTXO big enough for this transaction.`
 
-...if it cannot find a UTXO larger than the amount-to-send. It will not combine
+...if it cannot find a confirmed UTXO larger than the amount-to-send. It will not combine
 UTXOs to make the payment. The `send-all` command is the only command that will
 combine UTXOs, and it will warn the user when it does so.
 
