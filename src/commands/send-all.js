@@ -5,8 +5,7 @@
   another wallet.
 
   This command has a negative effect on the users privacy by
-  linking all addresses and UTXOs. This can be used to
-  deanonymize users.
+  linking all addresses and UTXOs. This effectively deanonymize users.
 
   The order of operations matter. The code below complete the following steps
   *in order*:
@@ -16,13 +15,13 @@
   -Loop through each input and sign
   -Build the transaction
   -Broadcast the transaction
-
 */
 
 "use strict"
 
 const BB = require("bitbox-sdk")
-//const GetAddress = require("./get-address")
+const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+
 const UpdateBalances = require("./update-balances")
 
 const AppUtils = require("../util")
@@ -35,6 +34,13 @@ util.inspect.defaultOptions = { depth: 2 }
 const { Command, flags } = require("@oclif/command")
 
 class SendAll extends Command {
+  constructor(argv, config) {
+    super(argv, config)
+    //_this = this
+
+    this.BITBOX = BITBOX
+  }
+
   async run() {
     try {
       const { flags } = this.parse(SendAll)
@@ -54,23 +60,20 @@ class SendAll extends Command {
 
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (walletInfo.network === "testnet")
-        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
-      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+        this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
-      walletInfo = await updateBalances.updateBalances(
-        filename,
-        walletInfo,
-        BITBOX
-      )
+      walletInfo = await updateBalances.updateBalances(filename, walletInfo)
 
       // Get all UTXOs controlled by this wallet.
-      const utxos = await appUtils.getUTXOs(walletInfo, BITBOX)
+      const utxos = await appUtils.getUTXOs(walletInfo)
       //console.log(`utxos: ${util.inspect(utxos)}`)
 
       // Send the BCH, transfer change to the new address
-      const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
+      const hex = await this.sendAllBCH(utxos, sendToAddr, walletInfo)
+
+      const txid = await appUtils.broadcastTx(hex)
 
       console.log(`TXID: ${txid}`)
     } catch (err) {
@@ -80,8 +83,8 @@ class SendAll extends Command {
     }
   }
 
-  // Sends BCH to
-  async sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX) {
+  // Sends all BCH in a wallet to a new address.
+  async sendAllBCH(utxos, sendToAddr, walletInfo) {
     try {
       //console.log(`utxos: ${util.inspect(utxos)}`)
 
@@ -89,8 +92,8 @@ class SendAll extends Command {
 
       // instance of transaction builder
       if (walletInfo.network === `testnet`)
-        var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
-      else var transactionBuilder = new BITBOX.TransactionBuilder()
+        var transactionBuilder = new this.BITBOX.TransactionBuilder("testnet")
+      else var transactionBuilder = new this.BITBOX.TransactionBuilder()
 
       let originalAmount = 0
 
@@ -111,7 +114,7 @@ class SendAll extends Command {
       //console.log(`originalAmount: ${originalAmount}`)
 
       // get byte count to calculate fee. paying 1 sat/byte
-      const byteCount = BITBOX.BitcoinCash.getByteCount(
+      const byteCount = this.BITBOX.BitcoinCash.getByteCount(
         { P2PKH: utxos.length },
         { P2PKH: 1 }
       )
@@ -124,7 +127,7 @@ class SendAll extends Command {
 
       // add output w/ address and amount to send
       transactionBuilder.addOutput(
-        BITBOX.Address.toLegacyAddress(sendToAddr),
+        this.BITBOX.Address.toLegacyAddress(sendToAddr),
         sendAmount
       )
 
@@ -136,7 +139,7 @@ class SendAll extends Command {
 
         // Generate a keypair for the current address.
         const change = appUtils.changeAddrFromMnemonic(walletInfo, utxo.hdIndex)
-        const keyPair = BITBOX.HDNode.toKeyPair(change)
+        const keyPair = this.BITBOX.HDNode.toKeyPair(change)
 
         transactionBuilder.sign(
           i,
@@ -154,11 +157,7 @@ class SendAll extends Command {
       const hex = tx.toHex()
       //console.log(`Transaction raw hex: ${hex}`)
 
-      // sendRawTransaction to running BCH node
-      const broadcast = await BITBOX.RawTransactions.sendRawTransaction(hex)
-      //console.log(`Transaction ID: ${broadcast}`)
-
-      return broadcast
+      return hex
     } catch (err) {
       console.log(`Error in sendAllBCH()`)
       throw err
