@@ -10,8 +10,10 @@
 
 "use strict"
 
-const appUtil = require("../util")
 const qrcode = require("qrcode-terminal")
+
+const appUtil = require("../util")
+const appUtils = new appUtil.AppUtils()
 
 const BB = require("bitbox-sdk")
 const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
@@ -57,7 +59,7 @@ class GetAddress extends Command {
 
   async getAddress(filename) {
     //const filename = `${__dirname}/../../wallets/${name}.json`
-    const walletInfo = appUtil.openWallet(filename)
+    const walletInfo = appUtils.openWallet(filename)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     // root seed buffer

@@ -61,11 +61,23 @@ class AppUtils {
       throw err
     }
   }
+
+  // Open a wallet by file name.
+  openWallet(filename) {
+    try {
+      // Delete the cached copy of the wallet. This allows testing of list-wallets.
+      delete require.cache[require.resolve(filename)]
+
+      const walletInfo = require(filename)
+      return walletInfo
+    } catch (err) {
+      throw new Error(`Could not open ${filename}`)
+    }
+  }
 }
 
 module.exports = {
   saveWallet,
-  openWallet,
   changeAddrFromMnemonic, // Used for signing transactions.
   AppUtils
 }
@@ -80,19 +92,6 @@ function saveWallet(filename, walletData) {
       return resolve()
     })
   })
-}
-
-// Open a wallet by file name.
-function openWallet(filename) {
-  try {
-    // Delete the cached copy of the wallet. This allows testing of list-wallets.
-    delete require.cache[require.resolve(filename)]
-
-    const walletInfo = require(filename)
-    return walletInfo
-  } catch (err) {
-    throw new Error(`Could not open ${filename}`)
-  }
 }
 
 // Generate a change address from a Mnemonic of a private key.

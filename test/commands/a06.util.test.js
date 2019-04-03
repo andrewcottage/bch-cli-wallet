@@ -83,7 +83,7 @@ describe("#util.js", () => {
   describe("#openWallet", () => {
     it("should throw error if wallet file not found.", async () => {
       try {
-        await appUtil.openWallet("doesnotexist")
+        await appUtils.openWallet("doesnotexist")
       } catch (err) {
         assert.include(err.message, `Could not open`, "Expected error message.")
       }
