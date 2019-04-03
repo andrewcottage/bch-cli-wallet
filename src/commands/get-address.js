@@ -10,8 +10,10 @@
 
 "use strict"
 
-const appUtil = require("../util")
 const qrcode = require("qrcode-terminal")
+
+const AppUtils = require("../util")
+const appUtils = new AppUtils()
 
 const BB = require("bitbox-sdk")
 const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
@@ -57,7 +59,7 @@ class GetAddress extends Command {
 
   async getAddress(filename) {
     //const filename = `${__dirname}/../../wallets/${name}.json`
-    const walletInfo = appUtil.openWallet(filename)
+    const walletInfo = appUtils.openWallet(filename)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     // root seed buffer
@@ -90,7 +92,7 @@ class GetAddress extends Command {
     }
 
     // Update the wallet file.
-    await appUtil.saveWallet(filename, walletInfo)
+    await appUtils.saveWallet(filename, walletInfo)
 
     // get the cash address
     const newAddress = this.BITBOX.HDNode.toCashAddress(change)

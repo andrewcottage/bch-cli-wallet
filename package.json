@@ -31,7 +31,7 @@
     "globby": "^8.0.1",
     "mocha": "^5.2.0",
     "nock": "^10.0.3",
-    "nyc": "^13.1.0",
+    "nyc": "^13.3.0",
     "semantic-release": "^15.13.3",
     "sinon": "^7.0.0"
   },
@@ -62,7 +62,8 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --reporter=text mocha  --timeout 15000",
+    "test": "TEST=unit nyc --reporter=text mocha  --timeout 15000",
+    "test:integration": "TEST=integration nyc --reporter=text mocha  --timeout 15000",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "coverage:report": "nyc --reporter=html mocha",
     "version": "oclif-dev readme && git add README.md",

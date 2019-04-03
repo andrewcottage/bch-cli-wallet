@@ -7,16 +7,21 @@
 
   This method of selecting UTXOs can leave a lot of dust UTXOs lying around in
   the wallet. It is assumed the user will consolidate the dust UTXOs periodically
-  with an online service, as described here:
-  https://gist.github.com/christroutner/457b99b8033fdea5ae565687e6360323
+  with an online service like Consolidating CoinJoin or CashShuffle, as
+  described here:
+  https://gist.github.com/christroutner/8d54597da652fe2affa5a7230664bc45
 */
 
 "use strict"
 
 const BB = require("bitbox-sdk")
-const appUtil = require("../util")
+const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+
 const GetAddress = require("./get-address")
 const UpdateBalances = require("./update-balances")
+
+const AppUtils = require("../util")
+const appUtils = new AppUtils()
 
 // Used for debugging and error reporting.
 const util = require("util")
@@ -25,6 +30,13 @@ util.inspect.defaultOptions = { depth: 2 }
 const { Command, flags } = require("@oclif/command")
 
 class Send extends Command {
+  constructor(argv, config) {
+    super(argv, config)
+    //_this = this
+
+    this.BITBOX = BITBOX
+  }
+
   async run() {
     try {
       const { flags } = this.parse(Send)
@@ -38,30 +50,28 @@ class Send extends Command {
 
       // Open the wallet data file.
       const filename = `${__dirname}/../../wallets/${name}.json`
-      let walletInfo = appUtil.openWallet(filename)
+      let walletInfo = appUtils.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
 
       // Determine if this is a testnet wallet or a mainnet wallet.
-      if (walletInfo.network === "testnet")
-        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
-      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
+      if (walletInfo.network === "testnet") {
+        this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
+        appUtils.BITBOX = this.BITBOX
+      }
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
-      walletInfo = await updateBalances.updateBalances(
-        filename,
-        walletInfo,
-        BITBOX
-      )
+      updateBalances.BITBOX = this.BITBOX
+      walletInfo = await updateBalances.updateBalances(filename, walletInfo)
 
       // Get info on UTXOs controlled by this wallet.
-      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
+      const utxos = await appUtils.getUTXOs(walletInfo)
       //console.log(`send utxos: ${util.inspect(utxos)}`)
 
       // Select optimal UTXO
-      const utxo = await this.selectUTXO(bch, utxos, BITBOX)
+      const utxo = await this.selectUTXO(bch, utxos)
       //console.log(`selected utxo: ${util.inspect(utxo)}`)
 
       // Exit if there is no UTXO big enough to fulfill the transaction.
@@ -72,36 +82,38 @@ class Send extends Command {
 
       // Generate a new address, for sending change to.
       const getAddress = new GetAddress()
-      const changeAddress = await getAddress.getAddress(filename, BITBOX)
+      getAddress.BITBOX = this.BITBOX
+      const changeAddress = await getAddress.getAddress(filename)
       //console.log(`changeAddress: ${changeAddress}`)
 
       // Send the BCH, transfer change to the new address
-      const txid = await this.sendBCH(
+      const hex = await this.sendBCH(
         utxo,
         bch,
         changeAddress,
         sendToAddr,
-        walletInfo,
-        BITBOX
+        walletInfo
       )
+
+      const txid = await appUtils.broadcastTx(hex)
 
       console.log(`TXID: ${txid}`)
     } catch (err) {
       //if (err.message) console.log(err.message)
       //else console.log(`Error in .run: `, err)
-      console.log(`Error in .run: `, err)
+      console.log(`Error in send.js/run(): `, err)
     }
   }
 
   // Sends BCH to
-  async sendBCH(utxo, bch, changeAddress, sendToAddr, walletInfo, BITBOX) {
+  async sendBCH(utxo, bch, changeAddress, sendToAddr, walletInfo) {
     try {
       //console.log(`utxo: ${util.inspect(utxo)}`)
 
       // instance of transaction builder
       if (walletInfo.network === `testnet`)
-        var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
-      else var transactionBuilder = new BITBOX.TransactionBuilder()
+        var transactionBuilder = new this.BITBOX.TransactionBuilder("testnet")
+      else var transactionBuilder = new this.BITBOX.TransactionBuilder()
 
       const satoshisToSend = Math.floor(bch * 100000000)
       //console.log(`Amount to send in satoshis: ${satoshisToSend}`)
@@ -114,7 +126,7 @@ class Send extends Command {
       transactionBuilder.addInput(txid, vout)
 
       // get byte count to calculate fee. paying 1 sat/byte
-      const byteCount = BITBOX.BitcoinCash.getByteCount(
+      const byteCount = this.BITBOX.BitcoinCash.getByteCount(
         { P2PKH: 1 },
         { P2PKH: 2 }
       )
@@ -143,21 +155,18 @@ class Send extends Command {
 
       // add output w/ address and amount to send
       transactionBuilder.addOutput(
-        BITBOX.Address.toLegacyAddress(sendToAddr),
+        this.BITBOX.Address.toLegacyAddress(sendToAddr),
         satoshisToSend
       )
       transactionBuilder.addOutput(
-        BITBOX.Address.toLegacyAddress(changeAddress),
+        this.BITBOX.Address.toLegacyAddress(changeAddress),
         remainder
       )
 
       // Generate a keypair from the change address.
-      const change = appUtil.changeAddrFromMnemonic(
-        walletInfo,
-        utxo.hdIndex,
-        BITBOX
-      )
-      const keyPair = BITBOX.HDNode.toKeyPair(change)
+      const change = appUtils.changeAddrFromMnemonic(walletInfo, utxo.hdIndex)
+      //console.log(`change: ${JSON.stringify(change, null, 2)}`)
+      const keyPair = this.BITBOX.HDNode.toKeyPair(change)
 
       // Sign the transaction with the HD node.
       let redeemScript
@@ -177,10 +186,7 @@ class Send extends Command {
       //console.log(`Transaction raw hex: `)
       //console.log(hex)
 
-      // sendRawTransaction to running BCH node
-      const broadcast = await BITBOX.RawTransactions.sendRawTransaction(hex)
-      //console.log(`Transaction ID: ${broadcast}`)
-      return broadcast
+      return hex
     } catch (err) {
       console.log(`Error in sendBCH()`)
       throw err
@@ -192,7 +198,7 @@ class Send extends Command {
   // 2. The UTXO should be as close to the amount of BCH as possible.
   //    i.e. as small as possible
   // Returns a single UTXO object.
-  selectUTXO(bch, utxos, BITBOX) {
+  selectUTXO(bch, utxos) {
     let candidateUTXO = {}
 
     const bchSatoshis = bch * 100000000
