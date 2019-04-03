@@ -37,15 +37,12 @@ a new HD wallet.
 const CreateWallet = require('bch-cli-wallet/src/commands/create-wallet')
 const createWallet = new CreateWallet()
 
-// Instantiate BITBOX SDK
-const BITBOXSDK = require('bitbox-sdk')
-const BITBOX = new BITBOXSDK()
-
 const walletFile = './wallet.json'
 
-// Generate a new wallet.
 async function makeNewWallet() {
-  const wallet = await createWallet.createWallet(walletFile, BITBOX)
+  const wallet = await createWallet.createWallet(walletFile)
+
+  console.log(`wallet: ${util.inspect(wallet)}`)
 }
 makeNewWallet()
 ```
