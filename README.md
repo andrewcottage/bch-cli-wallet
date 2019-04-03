@@ -42,7 +42,7 @@ const walletFile = './wallet.json'
 async function makeNewWallet() {
   const wallet = await createWallet.createWallet(walletFile)
 
-  console.log(`wallet: ${util.inspect(wallet)}`)
+  console.log(`wallet: ${JSON.stringify(wallet,null,2)}`)
 }
 makeNewWallet()
 ```
