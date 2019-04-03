@@ -14,9 +14,12 @@
 "use strict"
 
 const BB = require("bitbox-sdk")
-const appUtil = require("../util")
+
 const GetAddress = require("./get-address")
 const UpdateBalances = require("./update-balances")
+
+const AppUtils = require("../util")
+const appUtils = new AppUtils()
 
 // Used for debugging and error reporting.
 const util = require("util")
@@ -38,7 +41,7 @@ class Send extends Command {
 
       // Open the wallet data file.
       const filename = `${__dirname}/../../wallets/${name}.json`
-      let walletInfo = appUtil.openWallet(filename)
+      let walletInfo = appUtils.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -57,7 +60,7 @@ class Send extends Command {
       )
 
       // Get info on UTXOs controlled by this wallet.
-      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
+      const utxos = await appUtils.getUTXOs(walletInfo, BITBOX)
       //console.log(`send utxos: ${util.inspect(utxos)}`)
 
       // Select optimal UTXO
@@ -152,11 +155,8 @@ class Send extends Command {
       )
 
       // Generate a keypair from the change address.
-      const change = appUtil.changeAddrFromMnemonic(
-        walletInfo,
-        utxo.hdIndex,
-        BITBOX
-      )
+      const change = appUtils.changeAddrFromMnemonic(walletInfo, utxo.hdIndex)
+      //console.log(`change: ${JSON.stringify(change, null, 2)}`)
       const keyPair = BITBOX.HDNode.toKeyPair(change)
 
       // Sign the transaction with the HD node.

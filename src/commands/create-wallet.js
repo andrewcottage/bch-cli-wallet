@@ -1,6 +1,7 @@
 "use strict"
 
-const appUtil = require("../util")
+const AppUtils = require("../util")
+const appUtils = new AppUtils()
 
 const BB = require("bitbox-sdk")
 const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
@@ -80,7 +81,7 @@ class CreateWallet extends Command {
 
       // Write out the basic information into a json file for other apps to use.
       //const filename = `${__dirname}/../../wallets/${name}.json`
-      await appUtil.saveWallet(filename, walletData)
+      await appUtils.saveWallet(filename, walletData)
 
       return walletData
     } catch (err) {

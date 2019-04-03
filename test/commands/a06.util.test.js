@@ -8,7 +8,7 @@ const assert = require("chai").assert
 const sinon = require("sinon")
 
 // File under test.
-const appUtil = require("../../src/util")
+const AppUtils = require("../../src/util")
 
 const BB = require("bitbox-sdk")
 const REST_URL = { restURL: "https://trest.bitcoin.com/v2/" }
@@ -40,7 +40,7 @@ describe("#util.js", () => {
     BITBOX = bitboxMock
     mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
 
-    appUtils = new appUtil.AppUtils()
+    appUtils = new AppUtils()
     appUtils.BITBOX = BITBOX
 
     sandbox = sinon.createSandbox()
@@ -81,12 +81,32 @@ describe("#util.js", () => {
   })
 
   describe("#openWallet", () => {
-    it("should throw error if wallet file not found.", async () => {
+    it("should throw error if wallet file not found.", () => {
       try {
-        await appUtils.openWallet("doesnotexist")
+        appUtils.openWallet("doesnotexist")
       } catch (err) {
         assert.include(err.message, `Could not open`, "Expected error message.")
       }
+    })
+  })
+
+  describe("#saveWallet", () => {
+    it("should save a wallet without error", async () => {
+      const filename = `${__dirname}/../../wallets/test123.json`
+
+      await appUtils.saveWallet(filename, mockedWallet)
+    })
+  })
+
+  describe("#changeAddrFromMnemonic", () => {
+    it("should return a change address", () => {
+      appUtils.BITBOX = new BB(REST_URL)
+
+      const result = appUtils.changeAddrFromMnemonic(mockedWallet, 0)
+      //console.log(`result: ${util.inspect(result)}`)
+      //console.log(`result: ${JSON.stringify(result, null, 2)}`)
+
+      assert.hasAnyKeys(result, ["keyPair", "chainCode", "index"])
     })
   })
 })

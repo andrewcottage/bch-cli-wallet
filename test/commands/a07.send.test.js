@@ -128,7 +128,8 @@ describe("send", () => {
       height: 1265272,
       confirmations: 733,
       legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
+      hdIndex: 0
     }
     const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
 
@@ -156,7 +157,8 @@ describe("send", () => {
       height: 1265272,
       confirmations: 733,
       legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
+      hdIndex: 0
     }
     const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
 

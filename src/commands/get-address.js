@@ -12,8 +12,8 @@
 
 const qrcode = require("qrcode-terminal")
 
-const appUtil = require("../util")
-const appUtils = new appUtil.AppUtils()
+const AppUtils = require("../util")
+const appUtils = new AppUtils()
 
 const BB = require("bitbox-sdk")
 const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
@@ -92,7 +92,7 @@ class GetAddress extends Command {
     }
 
     // Update the wallet file.
-    await appUtil.saveWallet(filename, walletInfo)
+    await appUtils.saveWallet(filename, walletInfo)
 
     // get the cash address
     const newAddress = this.BITBOX.HDNode.toCashAddress(change)
