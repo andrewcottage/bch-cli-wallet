@@ -82,15 +82,6 @@ class GetAddress extends Command {
     // Increment to point to a new address for next time.
     walletInfo.nextAddress++
 
-    // Throw up a warning message when more than 100 addresses have been generated.
-    if (walletInfo.nextAddress > 50) {
-      console.log(`
-        Over 50 addresses have been generated with this wallet. You should
-        consider consolidating this wallet into a new one, to reduce processing
-        time in tracking all the addresses.
-      `)
-    }
-
     // Update the wallet file.
     await appUtils.saveWallet(filename, walletInfo)
 
