@@ -59,11 +59,14 @@ class SendAll extends Command {
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
 
       // Determine if this is a testnet wallet or a mainnet wallet.
-      if (walletInfo.network === "testnet")
+      if (walletInfo.network === "testnet") {
         this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
+        appUtils.BITBOX = this.BITBOX
+      }
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
+      updateBalances.BITBOX = this.BITBOX
       walletInfo = await updateBalances.updateBalances(filename, walletInfo)
 
       // Get all UTXOs controlled by this wallet.

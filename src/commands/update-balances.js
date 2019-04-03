@@ -8,7 +8,8 @@
 
 "use strict"
 
-const appUtil = require("../util")
+const AppUtils = require("../util")
+const appUtils = new AppUtils()
 
 const BB = require("bitbox-sdk")
 const BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v2/" })
@@ -36,7 +37,7 @@ class UpdateBalances extends Command {
 
       // Open the wallet data file.
       const filename = `${__dirname}/../../wallets/${name}.json`
-      let walletInfo = appUtil.openWallet(filename)
+      let walletInfo = appUtils.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -85,7 +86,7 @@ class UpdateBalances extends Command {
     walletInfo.balanceConfirmed = balance.totalConfirmed
     walletInfo.balanceUnconfirmed = balance.totalUnconfirmed
     walletInfo.hasBalance = hasBalance
-    await appUtil.saveWallet(filename, walletInfo)
+    await appUtils.saveWallet(filename, walletInfo)
 
     return walletInfo
   }

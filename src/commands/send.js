@@ -56,11 +56,14 @@ class Send extends Command {
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
 
       // Determine if this is a testnet wallet or a mainnet wallet.
-      if (walletInfo.network === "testnet")
+      if (walletInfo.network === "testnet") {
         this.BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v2/" })
+        appUtils.BITBOX = this.BITBOX
+      }
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
+      updateBalances.BITBOX = this.BITBOX
       walletInfo = await updateBalances.updateBalances(filename, walletInfo)
 
       // Get info on UTXOs controlled by this wallet.
@@ -79,6 +82,7 @@ class Send extends Command {
 
       // Generate a new address, for sending change to.
       const getAddress = new GetAddress()
+      getAddress.BITBOX = this.BITBOX
       const changeAddress = await getAddress.getAddress(filename)
       //console.log(`changeAddress: ${changeAddress}`)
 
@@ -97,7 +101,7 @@ class Send extends Command {
     } catch (err) {
       //if (err.message) console.log(err.message)
       //else console.log(`Error in .run: `, err)
-      console.log(`Error in .run: `, err)
+      console.log(`Error in send.js/run(): `, err)
     }
   }
 
